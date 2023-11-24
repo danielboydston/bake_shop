@@ -1,19 +1,31 @@
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
-from django.views import generic
-
-from .models import Product
-
-
-class IndexView(generic.ListView):
-    template_name = "catelog/index.html"
-    context_object_name = "product_list"
-
-    def get_queryset(self):
-        return Product.objects
+from rest_framework import viewsets
+from rest_framework import permissions
+from .serializers import ProductSerializer, VariationSerializer, CategorySerializer
+from .models import Product, Variation, Category
 
 
-class DetailView(generic.DetailView):
-    model = Product
-    template_name = "catelog/detail.html"
+class ProductViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows products to be viewed or edited.
+    """
+    queryset = Product.objects.all().order_by('name')
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+
+class VariationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows product variations to be viewed or edited.
+    """
+    queryset = Variation.objects.all()
+    serializer_class = VariationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows categories to be viewed or edited.
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]

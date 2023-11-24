@@ -24,7 +24,6 @@ class Variation(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     cost = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     sale_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    recipe_batch_size = models.DecimalField(max_digits=6, decimal_places=2, default=1)
     active = models.BooleanField(default=True)
 
     def __str__(self):

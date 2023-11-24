@@ -1,10 +1,15 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
 from . import views
 
-app_name = "catelog"
+router = routers.DefaultRouter()
+router.register(r'product', views.ProductViewSet)
+router.register(r'variation', views.VariationViewSet)
+router.register(r'category', views.CategoryViewSet)
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
-    path("<int:pk>/", views.DetailView.as_view(), name="detail"),
-    #path("<int:pk>/item/", views.ItemIndexView.as_view(), name="itemindex"),
-    #path("<int:pk>/item/<int:pk>", views.ItemDetailView.as_view(), name="detail")
+    path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

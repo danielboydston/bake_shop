@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-x*k_&004!lc2j&1-u8u91xqo05zs1bg%09i-pi-wl1_fzv29nk
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "baking-be"
+    "baking-be",
+    "localhost"
 ]
 
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     "units.apps.UnitsConfig",
     "purchasing.apps.PurchasingConfig",
     "sales.apps.SalesConfig",
+    "rest_framework",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -129,3 +131,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}

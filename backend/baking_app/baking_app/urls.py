@@ -18,8 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path("api/v1/catelog/", include("catelog.urls")),
     #path("recipes/", include("recipes.urls")),
-    path("catelog/", include("catelog.urls")),
+    #path("catelog/", include("catelog.urls")),
     #path("purchasing/", include("purchasing.urls")),
     #path("sales/", include("sales.urls")),
     #path("units", include("units.urls")),
