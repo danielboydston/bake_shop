@@ -51,5 +51,5 @@ class Item(models.Model):
     qty = models.DecimalField(max_digits=8, decimal_places=2)
     unit_price = models.DecimalField(max_digits=8, decimal_places=2)
 
-    def __str__(Self):
+    def __str__(self):
         return f"{self.qty} {self.product_variation} {self.unit_price} {self.qty * self.unit_price}"

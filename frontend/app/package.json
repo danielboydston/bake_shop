@@ -1,0 +1,20 @@
+{
+  "name": "bake_shop",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "start": "vite"
+  },
+  "dependencies": {
+    "@suid/icons-material": "*",
+    "@suid/material": "*",
+    "solid-js": "*"
+  },
+  "devDependencies": {
+    "@suid/vite-plugin": "*",
+    "typescript": "^4.8.2",
+    "vite": "^4.5.0",
+    "vite-plugin-solid": "*"
+  }
+}
