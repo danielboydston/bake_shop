@@ -12,7 +12,7 @@
 	"initializeCommand": "docker network inspect baking-net > /dev/null || docker network create baking-net --attachable",
 
 	"runArgs": [
-		"--name=baking_fe",
+		"--name=baking-fe",
 		"--network=baking-net"
 	],
 	// Features to add to the dev container. More info: https://containers.dev/features.

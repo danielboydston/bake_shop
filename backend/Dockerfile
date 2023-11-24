@@ -17,4 +17,6 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requ
 
 COPY baking_app/ .
 
-CMD ./manage.py runserver
+EXPOSE 8000
+
+CMD baking_app/manage.py runserver
