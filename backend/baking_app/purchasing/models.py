@@ -14,6 +14,7 @@ class StatusCategory(models.Model):
 class Status(models.Model):
     name = models.CharField(max_length=255)
     category = models.ForeignKey(StatusCategory, on_delete=models.RESTRICT)
+    sequence = models.IntegerField()
 
     class Meta:  
         verbose_name_plural = 'Statuses'
@@ -25,6 +26,7 @@ class Vendor(models.Model):
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=255, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -34,7 +36,7 @@ class PurchaseOrder(models.Model):
     vendor_id = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateField()
     status_id = models.ForeignKey(Status, on_delete=models.RESTRICT)
-    shipping_fee = models.DecimalField(max_digits=8, decimal_places=2)
+    shipping_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.order_date} {self.vendor_id} {self.status_id}"
