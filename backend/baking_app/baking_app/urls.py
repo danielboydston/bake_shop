@@ -19,6 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path("api/v1/catelog/", include("catelog.urls")),
+    path("api/v1/config/", include("config.urls")),
     #path("recipes/", include("recipes.urls")),
     #path("catelog/", include("catelog.urls")),
     #path("purchasing/", include("purchasing.urls")),

@@ -27,13 +27,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "baking-be",
-    "localhost"
+    "localhost",
+    "localhost:8000",
+    "localhost:3000"
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "config.apps.ConfigConfig",
     "production.apps.ProductionConfig",
     "recipes.apps.RecipesConfig",
     "catelog.apps.CatelogConfig",
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'baking_app.urls'
@@ -136,3 +140,5 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+
+CORS_ORIGIN_ALLOW_ALL = DEBUG
