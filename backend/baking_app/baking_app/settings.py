@@ -29,7 +29,9 @@ ALLOWED_HOSTS = [
     "baking-be",
     "localhost",
     "localhost:8000",
-    "localhost:3000"
+    "localhost:3000",
+    "192.168.88.244",
+    "195.168.88.239"
 ]
 
 
