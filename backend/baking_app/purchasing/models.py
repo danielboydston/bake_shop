@@ -36,7 +36,7 @@ class PurchaseOrder(models.Model):
     vendor_id = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateField()
     status_id = models.ForeignKey(Status, on_delete=models.RESTRICT)
-    shipping_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    shipping_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.order_date} {self.vendor_id} {self.status_id}"
@@ -45,10 +45,14 @@ class Item(models.Model):
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.RESTRICT)
     package_unit = models.ForeignKey(Unit, on_delete=models.RESTRICT, related_name="po_item")
-    package_unit_qty = models.DecimalField(max_digits=8, decimal_places=2)
-    purchase_qty = models.DecimalField(max_digits=8, decimal_places=2)
-    purchase_price = models.DecimalField(max_digits=8, decimal_places=2)
+    package_unit_qty = models.DecimalField(max_digits=10, decimal_places=4)
+    purchase_qty = models.DecimalField(max_digits=10, decimal_places=4)
+    purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.ForeignKey(Status, on_delete=models.RESTRICT)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.package_physical_qty = PhysicalQty(self.package_unit_qty, self.package_unit)
 
     def __str__(self):
         return f"{self.purchase_qty} {self.ingredient} {self.package_unit_qty} {self.package_unit} {self.status}"

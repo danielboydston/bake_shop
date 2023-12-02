@@ -22,8 +22,8 @@ class Product(models.Model):
 class Variation(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=True, blank=True)
-    cost = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    sale_price = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     active = models.BooleanField(default=True)
 
     def __str__(self):

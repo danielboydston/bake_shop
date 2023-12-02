@@ -64,14 +64,14 @@ class PhysicalQty:
         
         if self.unit.category == to_unit.category:
             # Convert to base
-            equation = re.sub('[^ub0-9+\-*/\.]', '', self.unit.conversion_to_base)
+            equation = re.sub(r'[^ub0-9+\-*/\.]', '', self.unit.conversion_to_base)
             base = BaseUnit.objects.get(pk=self.unit.category.pk)
             u = self.qty
             b = eval(equation)
 
             # Convert from base
             
-            equation = re.sub('[^ub0-9+\-*/\.a]', '', to_unit.conversion_from_base)
+            equation = re.sub(r'[^ub0-9+\-*/\.a]', '', to_unit.conversion_from_base)
             new_pq = PhysicalQty(eval(equation), to_unit)
         else:
             raise ValueError(f"Cannot convert between {self.unit.category} and {to_unit.category} unit categories")
