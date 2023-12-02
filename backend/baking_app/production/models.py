@@ -1,5 +1,5 @@
 from django.db import models
-from units.models import Unit
+from units.models import Unit, PhysicalQty
 from catelog.models import Variation
 
 class Output(models.Model):

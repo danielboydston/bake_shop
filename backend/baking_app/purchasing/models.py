@@ -1,6 +1,6 @@
 from django.db import models
 from recipes.models import Ingredient
-from units.models import Unit
+from units.models import Unit, PhysicalQty
 
 class StatusCategory(models.Model):
     name = models.CharField(max_length=255)

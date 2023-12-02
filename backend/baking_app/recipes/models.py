@@ -1,5 +1,5 @@
 from django.db import models
-from units.models import Unit
+from units.models import Unit, PhysicalQty
 from catelog.models import Variation
 
 class IngredientCategory(models.Model):
@@ -39,6 +39,10 @@ class RecipeIngredient(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
     qty_numerator = models.IntegerField()
     qty_denominator = models.IntegerField(default=1)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.physical_qty = PhysicalQty(self.qty_numerator / self.qty_denominator, self.unit)
 
     def __str__(self):
         qty = f"{self.qty_numerator}"
