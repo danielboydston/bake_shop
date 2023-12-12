@@ -49,8 +49,8 @@ class BaseUnit(models.Model):
 class PhysicalQty:
 
     def __init__(self, qty:Decimal, unit:Unit):
-        self.qty = qty
-        self.unit = unit
+        self.qty: Decimal = qty
+        self.unit: Unit = unit
 
     def __str__(self):
         return f"{self.qty} {self.unit.abbr}"
@@ -72,14 +72,14 @@ class PhysicalQty:
         equation = PhysicalQty.scrub_equation(self.unit.conversion_to_base)
         base = BaseUnit.objects.get(pk=self.unit.category.pk)
         # 'q' is used in the equations to represent the qty.  Eval will pull the value of q from the variable.
-        q = self.qty
+        q = float(self.qty)
         # Set 'q' to the new value of the base unit for use in the next eval calculation
         q = eval(equation)
         
         if self.unit.category == to_unit.category:
             # Convert from base unit to to_unit
             equation = PhysicalQty.scrub_equation(to_unit.conversion_from_base)
-            new_pq = PhysicalQty(eval(equation), to_unit)
+            new_pq = PhysicalQty(Decimal(eval(equation)), to_unit)
         elif ingredient:
             try:
                 # Convert between the base unit of one category to the base unit of the other category
@@ -87,9 +87,9 @@ class PhysicalQty:
                 q = eval(equation)
                 # Convert from the base unit of the new category to the final unit
                 equation = PhysicalQty.scrub_equation(to_unit.conversion_from_base)
-                new_pq = PhysicalQty(eval(equation), to_unit)
+                new_pq = PhysicalQty(Decimal(eval(equation)), to_unit)
             except Exception as e:
-                raise ValueError(f"No conversion found for {ingredient.name} from unit category {self.unit.category} to {to_unit.category}")
+                raise ValueError(f"No conversion found for '{ingredient.name}' from unit category {self.unit.category} to {to_unit.category}")
             pass
         else:
             raise ValueError(f"Cannot convert between {self.unit.category} and {to_unit.category} unit categories")

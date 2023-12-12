@@ -22,7 +22,6 @@ class Product(models.Model):
 class Variation(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=True, blank=True)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     active = models.BooleanField(default=True)
 
@@ -32,3 +31,14 @@ class Variation(models.Model):
         else:
             display_name = self.product
         return display_name
+    
+    def unit_cost(self):
+        """
+        The unit cost of the product, derived from the active recipe cost and the make qty/unit
+        """
+
+        # Get the active productrecipe
+        product_recipe = self.productrecipe_set.get(active=True)
+        product_cost = product_recipe.recipe.cost() / product_recipe.make_qty 
+
+        return product_cost
