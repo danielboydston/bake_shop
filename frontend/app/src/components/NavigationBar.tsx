@@ -30,10 +30,10 @@ export default function NavigationBar() {
     <Box
       sx={{ width: 250 }}
       role="presentation"
-      onClick={toggleDrawer(false)}
+      // onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
     >
-      <NavigationItems activeItemSetter={setActiveItem} />
+      <NavigationItems activeItemSetter={setActiveItem} toggleDrawerSetter={setOpenMenu} />
     </Box>
   );
 
@@ -48,7 +48,7 @@ export default function NavigationBar() {
         {menuItems()}
       </Drawer>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
+        <AppBar position="fixed">
           <Toolbar>
             <IconButton
               size="large"

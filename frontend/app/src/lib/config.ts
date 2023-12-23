@@ -1,6 +1,6 @@
 export async function appList() {
   const response = await fetch(
-    `http://192.168.88.244:8000/api/v1/config/apps/`
+    `${import.meta.env.VITE_API_PATH}/config/apps/`
   );
   const results = await response.json();
 
@@ -9,7 +9,7 @@ export async function appList() {
 
 export async function companyName() {
   const response = await fetch(
-    `http://192.168.88.244:8000/api/v1/config/company/`
+    `${import.meta.env.VITE_API_PATH}/config/company/`
   );
   const results = await response.json();
 

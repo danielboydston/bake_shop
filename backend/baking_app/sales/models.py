@@ -41,7 +41,7 @@ class Order(models.Model):
     status = models.ForeignKey(Status, on_delete=models.RESTRICT)
     
     def __str__(self):
-        return f"{self.order_date}"
+        return f"{self.order_date} {self.customer}"
 
 
 class Item(models.Model):
@@ -53,3 +53,14 @@ class Item(models.Model):
 
     def __str__(self):
         return f"{self.qty} {self.product_variation} {self.unit_price} {self.qty * self.unit_price}"
+
+
+class ItemAddOn(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey("recipes.ingredient", on_delete=models.RESTRICT)
+    unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
+    qty = models.DecimalField(max_digits=10, decimal_places=4)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.qty} {self.unit} {self.ingredient}"

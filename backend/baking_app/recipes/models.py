@@ -49,6 +49,19 @@ class Recipe(models.Model):
             total_cost += pq.qty * ri.ingredient.cost_per_unit
             
         return Decimal(f"{total_cost:.2f}")
+    
+    def cost_detail(self):
+        """
+        Return an array containing each ingredient and it's cost
+        """
+        ingredient_list = []
+        for ri in self.recipeingredient_set.all():
+            pq = ri.physical_qty.convert(ri.ingredient.base_unit, ri.ingredient)
+            ingredient_list.append({
+                "ingredient": ri,
+                "cost": pq.qty * ri.ingredient.cost_per_unit
+            })
+        return ingredient_list
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
@@ -58,11 +71,11 @@ class RecipeIngredient(models.Model):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # if self.unit:
-        #     self.physical_qty = PhysicalQty(self.qty, self.unit)
+        if self.unit:
+            self.physical_qty = PhysicalQty(self.qty, self.unit)
 
     def __str__(self):
-        return f"{self.qty} {self.unit} {self.ingredient}"
+        #return f"{self.qty} {self.unit} {self.ingredient}"
         return f"{self.physical_qty} {self.ingredient}"
 
 class RecipeInstruction(models.Model):

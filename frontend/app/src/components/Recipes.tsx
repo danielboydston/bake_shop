@@ -1,10 +1,10 @@
 import { createSignal, Show } from 'solid-js';
 import { Button } from "@suid/material";
 
-function Home() {
+function Recipes() {
   return (
-    <div>Bake Shop</div>
+    <div>Recipes</div>
   );
 }
 
-export default Home;
+export default Recipes;
