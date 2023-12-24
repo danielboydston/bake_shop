@@ -65,8 +65,8 @@ class VariationPackaging(models.Model):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # if self.unit:
-        #     self.physical_qty = PhysicalQty(self.qty, self.unit)
+        if self.unit:
+            self.physical_qty = PhysicalQty(self.qty, self.unit)
 
     def __str__(self):
         return f"{self.qty} {self.unit} {self.ingredient}"
