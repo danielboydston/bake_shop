@@ -48,12 +48,15 @@ class BaseUnit(models.Model):
 
 class PhysicalQty:
 
-    def __init__(self, qty:Decimal, unit:Unit):
+    def __init__(self, qty:Decimal | None=None, unit:Unit | None=None):
         self.qty: Decimal = qty
         self.unit: Unit = unit
 
     def __str__(self):
-        return f"{self.qty} {self.unit.abbr}"
+        if self.qty and self.unit:
+            return f"{self.qty} {self.unit.abbr}"
+        else:
+            return "None"
     
     @staticmethod
     def scrub_equation(equation:str) -> str:
@@ -66,34 +69,37 @@ class PhysicalQty:
         """
         Returns a new PhysicalQty equal to this instance but in to_units
         """
-        new_pq = False
-        
-        # Convert to base
-        equation = PhysicalQty.scrub_equation(self.unit.conversion_to_base)
-        base = BaseUnit.objects.get(pk=self.unit.category.pk)
-        # 'q' is used in the equations to represent the qty.  Eval will pull the value of q from the variable.
-        q = float(self.qty)
-        # Set 'q' to the new value of the base unit for use in the next eval calculation
-        q = eval(equation)
-        
-        if self.unit.category == to_unit.category:
-            # Convert from base unit to to_unit
-            equation = PhysicalQty.scrub_equation(to_unit.conversion_from_base)
-            new_pq = PhysicalQty(Decimal(eval(equation)), to_unit)
-        elif ingredient:
-            try:
-                # Convert between the base unit of one category to the base unit of the other category
-                equation = PhysicalQty.scrub_equation(ingredient.unitcategoryconversion_set.get(category_from=self.unit.category, category_to=to_unit.category).formula)
-                q = eval(equation)
-                # Convert from the base unit of the new category to the final unit
+
+        if self.qty and self.unit:
+            new_pq = False
+            
+            # Convert to base
+            equation = PhysicalQty.scrub_equation(self.unit.conversion_to_base)
+            base = BaseUnit.objects.get(pk=self.unit.category.pk)
+            # 'q' is used in the equations to represent the qty.  Eval will pull the value of q from the variable.
+            q = float(self.qty)
+            # Set 'q' to the new value of the base unit for use in the next eval calculation
+            q = eval(equation)
+            
+            if self.unit.category == to_unit.category:
+                # Convert from base unit to to_unit
                 equation = PhysicalQty.scrub_equation(to_unit.conversion_from_base)
                 new_pq = PhysicalQty(Decimal(eval(equation)), to_unit)
-            except Exception as e:
-                raise ValueError(f"No conversion found for '{ingredient.name}' from unit category {self.unit.category} to {to_unit.category}")
-            pass
+            elif ingredient:
+                try:
+                    # Convert between the base unit of one category to the base unit of the other category
+                    equation = PhysicalQty.scrub_equation(ingredient.unitcategoryconversion_set.get(category_from=self.unit.category, category_to=to_unit.category).formula)
+                    q = eval(equation)
+                    # Convert from the base unit of the new category to the final unit
+                    equation = PhysicalQty.scrub_equation(to_unit.conversion_from_base)
+                    new_pq = PhysicalQty(Decimal(eval(equation)), to_unit)
+                except Exception as e:
+                    raise ValueError(f"No conversion found for '{ingredient.name}' from unit category {self.unit.category} to {to_unit.category}")
+                pass
+            else:
+                raise ValueError(f"Cannot convert between {self.unit.category} and {to_unit.category} unit categories")
         else:
-            raise ValueError(f"Cannot convert between {self.unit.category} and {to_unit.category} unit categories")
-
+            raise ValueError(f"Physical quantity has no value.  Unable to convert.")
         return new_pq
     
     def mutate(self, to_unit: Unit):
@@ -109,15 +115,38 @@ class PhysicalQty:
         """
         Displays the PhysicalQty as a fraction
         """
-        max_denom = Config.objects.get(item="max_fraction_denominator")
-        frac = Fraction(self.qty).limit_denominator(max_denom.value)
-        whole = 0
-        num = frac.numerator
-        while num > frac.denominator:
-            whole += 1
-            num -= frac.denominator
-        whole_str = ''
-        if whole > 0:
-            whole_str = f"{whole}-"
+
+        if self.qty and self.unit:
+            max_denom = Config.objects.get(item="max_fraction_denominator")
+            frac = Fraction(self.qty).limit_denominator(max_denom.value)
+            whole = 0
+            num = frac.numerator
+            while num > frac.denominator:
+                whole += 1
+                num -= frac.denominator
+            whole_str = ''
+            if whole > 0:
+                whole_str = f"{whole}-"
         
-        return f"{whole_str}{num}/{frac.denominator} {self.unit.abbr}"
+            return f"{whole_str}{num}/{frac.denominator} {self.unit.abbr}"
+        else:
+            return "None"
+
+
+class HasPhysicalQty(models.Model):
+    qty = models.DecimalField(max_digits=10, decimal_places=4)
+    unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
+    physical_qty = PhysicalQty()
+
+    class Meta:
+        abstract = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if hasattr(self, 'unit'):
+            self.physical_qty = PhysicalQty(self.qty, self.unit)
+        
+    def save(self, *args, **kwargs):
+        self.physical_qty = PhysicalQty(self.qty, self.unit)
+        super(HasPhysicalQty, self).save(*args, **kwargs)
+        

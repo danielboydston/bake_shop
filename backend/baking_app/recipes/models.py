@@ -8,6 +8,7 @@ class IngredientCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "Ingredient categories"
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
@@ -17,6 +18,9 @@ class Ingredient(models.Model):
     category = models.ForeignKey(IngredientCategory, on_delete=models.RESTRICT, default=1)
     base_unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
     cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+
+    class Meta:
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
@@ -30,6 +34,9 @@ class Recipe(models.Model):
     baking_minutes_min = models.IntegerField(null=True, blank=True)
     baking_minutes_max = models.IntegerField(null=True, blank=True)
     active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ("name",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,6 +76,9 @@ class RecipeIngredient(models.Model):
     qty = models.DecimalField(max_digits=10, decimal_places=4)
     unit = models.ForeignKey(Unit, on_delete=models.RESTRICT)
     
+    class Meta:
+        ordering = ("recipe", "ingredient")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.unit:
@@ -82,6 +92,9 @@ class RecipeInstruction(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     disp_order = models.IntegerField()
     instruction = models.TextField()
+
+    class Meta:
+        ordering = ("recipe", "disp_order")
 
     def __str__(self):
         return f"{self.disp_order}.  {self.instruction}"

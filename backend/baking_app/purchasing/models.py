@@ -1,6 +1,6 @@
 from django.db import models
 from recipes.models import Ingredient
-from units.models import Unit, PhysicalQty
+from units.models import Unit, PhysicalQty, HasPhysicalQty
 
 class StatusCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -33,27 +33,37 @@ class Vendor(models.Model):
         return self.name
 
 class PurchaseOrder(models.Model):
-    vendor_id = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateField()
-    status_id = models.ForeignKey(Status, on_delete=models.RESTRICT)
+    status = models.ForeignKey(Status, on_delete=models.RESTRICT)
     shipping_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
-        return f"{self.order_date} {self.vendor_id} {self.status_id}"
+        return f"{self.order_date} {self.vendor} {self.status}"
+    
+    def item_cost(self):
+        cost = 0
+        for item in self.poitem_set.all():
+            cost += item.purchase_price
+        return cost
 
-class Item(models.Model):
+    def total_cost(self):
+        return self.item_cost() + self.shipping_fee
+
+class POItem(HasPhysicalQty):
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.RESTRICT)
-    package_unit = models.ForeignKey(Unit, on_delete=models.RESTRICT, related_name="po_item")
-    package_unit_qty = models.DecimalField(max_digits=10, decimal_places=4)
     purchase_qty = models.DecimalField(max_digits=10, decimal_places=4)
     purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.ForeignKey(Status, on_delete=models.RESTRICT)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.package_physical_qty = PhysicalQty(self.package_unit_qty, self.package_unit)
-
     def __str__(self):
-        return f"{self.purchase_qty} {self.ingredient} {self.package_unit_qty} {self.package_unit} {self.status}"
-
+        return f"{self.purchase_qty} {self.ingredient} {self.qty} {self.unit} {self.status}"
+    
+    def save(self, *args, **kwargs):
+        self.physical_qty = PhysicalQty(self.qty, self.unit)
+        super(POItem, self).save(*args, **kwargs)        
+        # Update the ingredient cost per unit based on this purchase
+        self.ingredient.cost_per_unit = self.purchase_price / self.purchase_qty / self.physical_qty.convert(self.ingredient.base_unit, self.ingredient).qty
+        self.ingredient.save()
+        
